@@ -1,124 +1,83 @@
-# Real-Time Monitoring of Critical Production Machine's Spare Parts and Production Process Consumables
+# Synapse: Industrial IoT Monitoring System
 
-## Project Overview
-A comprehensive real-time monitoring system for industrial machines that tracks sensor data, predicts failures, monitors consumables, and provides alerts through a web dashboard with live WebSocket streaming.
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![Node.js](https://img.shields.io/badge/Node.js-14%2B-green)
+![Status](https://img.shields.io/badge/Status-Active-success)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
-## Technology Stack
-- **Backend**: Node.js (WebSocket streaming)
-- **Data Source**: CSV files with synthetic sensor data
-- **Frontend**: HTML5, CSS3, JavaScript (Chart.js, TailwindCSS)
-- **Real-time**: WebSocket (ws library)
-- **Alternative Backend**: Java 11+ with REST API (optional)
+> **Real-time industrial asset monitoring with predictive AI and live WebSocket streaming.**
 
-## 🚀 Quick Start
+Synapse is a comprehensive dashboard for monitoring critical production machinery. It simulates a factory floor with 30+ machines, tracking sensor data (temperature, vibration, load), monitoring consumables, and predicting failures using AI-driven logic.
+
+---
+
+## 🚀 Key Features
+
+| Feature | Description |
+| :--- | :--- |
+| **⚡ Real-time Monitoring** | Live sensor data streaming via WebSockets with sub-second latency. |
+| **🤖 Failure Prediction** | AI algorithms analyze wear patterns to predict component failures before they happen. |
+| **📊 Interactive Dashboard** | Glassmorphism UI with dynamic Chart.js visualizations for deep data analysis. |
+| **🏭 Multi-Machine Sim** | Simulates a realistic factory environment with 30+ CNCs, Presses, and Welders. |
+| **🚨 Smart Alerts** | Automated anomaly detection system with severity-based alerting. |
+
+## 🛠️ Tech Stack
+
+- **Core**: ![Node.js](https://img.shields.io/badge/-Node.js-339933?logo=node.js&logoColor=white) ![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?logo=javascript&logoColor=black)
+- **Frontend**: ![HTML5](https://img.shields.io/badge/-HTML5-E34F26?logo=html5&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/-TailwindCSS-38B2AC?logo=tailwind-css&logoColor=white)
+- **Visualization**: ![Chart.js](https://img.shields.io/badge/-Chart.js-FF6384?logo=chart.js&logoColor=white)
+- **Communication**: WebSocket (`ws`)
+
+## 🏁 Quick Start
 
 ### Prerequisites
-- **Node.js** 14 or higher ([Download](https://nodejs.org/))
-- Modern web browser (Chrome, Firefox, Edge)
+- **Node.js** 14+ installed.
 
-### One-Click Run (Recommended)
+### One-Click Run (Windows)
+Double-click `run_all.bat` in the root directory. This will:
+1. Install dependencies.
+2. Start the data stream.
+3. Launch the dashboard in your browser.
 
-**Windows:**
-1. Double-click `run_all.bat` in the project root
-2. Dashboard opens automatically at `http://localhost:8081`
-3. Live data streams to your browser!
-
-**Or create a desktop shortcut:**
-1. Double-click `create_shortcut.bat` (one-time setup)
-2. Use the "Synapse Dashboard" icon on your desktop
-
-### Manual Run
-
+### Manual Setup
 ```bash
-# Install dependencies
+# 1. Install dependencies
 npm install
 
-# Start the data streamer
+# 2. Start the data streamer
 node csv-streamer.js
 
-# Open dashboard in browser
-# Navigate to: http://localhost:8081/index.html
+# 3. Open the dashboard
+# Visit http://localhost:8081 in your browser
+```
+
+## 📂 Project Structure
+
+```
+Synapse/
+├── machine_feed/       # Synthetic sensor data (CSV)
+├── src/
+│   └── main/
+│       └── resources/
+│           └── static/ # Frontend assets (HTML, JS, CSS)
+├── docs/               # Detailed documentation
+├── csv-streamer.js     # WebSocket server & Data streamer
+└── run_all.bat         # Launcher script
 ```
 
 ## 📚 Documentation
 
-- **One-Click Run:** See `ONE_CLICK_RUN.md` for complete guide
-- **Quick Start:** See `QUICK_START.md` for setup instructions
-- **Setup Help:** See `SETUP.md` for troubleshooting
-- **Next Steps:** See `NEXT_STEPS.md` for detailed guide
+- [Architecture Overview](docs/ARCHITECTURE.md)
+- [Project Summary](docs/PROJECT_SUMMARY.md)
+- [Module Breakdown](docs/MODULE_BREAKDOWN.md)
 
-## ✅ What's Included
+## 🤝 Contributing
 
-- ✅ Real-time WebSocket data streaming
-- ✅ 30 machines with synthetic sensor data
-- ✅ Interactive dashboard with live charts
-- ✅ Temperature, vibration, pressure, humidity sensors
-- ✅ Consumables monitoring (oil, coolant, filters)
-- ✅ Spare parts wear tracking
-- ✅ Anomaly detection and alerts
-- ✅ Modern glassmorphism UI with dark mode
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting a Pull Request.
 
-## 🎯 Features
+## 📄 License
 
-- **Real-time Monitoring**: Live sensor data updates every second
-- **Multi-Machine Support**: Monitor 30 machines simultaneously
-- **Sensor Types**: Temperature, Vibration, Pressure, RPM, Load, Humidity, Power
-- **Consumables Tracking**: Oil, Coolant, Hydraulic Oil, Brake Fluid, Filters
-- **Spare Parts**: Bearing wear, Drive belt wear, Motor health
-- **Alerts**: Automatic anomaly detection with severity levels
-- **Performance Metrics**: Efficiency tracking and KPIs
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🌐 Access
-
-- **Dashboard**: `http://localhost:8081/index.html`
-- **WebSocket**: `ws://localhost:8081`
-- **Data Source**: CSV files in `machine_feed/` directory
-
-## 📁 Project Structure
-
-```
-Synapse/
-├── run_all.bat              # One-click launcher
-├── create_shortcut.bat      # Desktop shortcut creator
-├── csv-streamer.js          # WebSocket data streamer
-├── package.json             # Node.js dependencies
-├── machine_feed/            # CSV data files (30 machines)
-├── src/main/resources/static/
-│   ├── index.html           # Main dashboard
-│   ├── dashboard.js         # Dashboard logic
-│   ├── dashboard_ws.js      # WebSocket connection
-│   ├── styles.css           # Custom styles
-│   └── *.js                 # Other modules
-└── docs/                    # Documentation
-
-```
-
-## 🔧 Alternative: Java Backend
-
-If you prefer the Java REST API backend:
-
-### Prerequisites
-- Java 11 or higher
-- Maven 3.6+
-
-### Build & Run
-
-```bash
-# Build
-mvn clean install
-
-# Start server (Terminal 1)
-java -cp "target/classes;target/dependency/*" com.synapse.api.Server
-
-# Start simulator (Terminal 2)
-java -cp "target/classes;target/dependency/*" com.synapse.simulation.SensorSimulator
-
-# Open dashboard
-# Navigate to: src/main/resources/static/index.html
-```
-
-## 📖 Need Help?
-
-- See `ONE_CLICK_RUN.md` for complete one-click setup guide
-- See `TROUBLESHOOTING.md` for common issues
-- See `docs/` folder for detailed documentation
+---
+*Built with ❤️ by Divyansh Bhatt*
