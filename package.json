@@ -1,0 +1,13 @@
+{
+  "name": "synapse-monitoring",
+  "version": "2.0.0",
+  "description": "Real-time industrial monitoring system",
+  "main": "csv-streamer.js",
+  "scripts": {
+    "start": "node csv-streamer.js"
+  },
+  "dependencies": {
+    "ws": "^8.16.0",
+    "csv-parse": "^5.5.3"
+  }
+}

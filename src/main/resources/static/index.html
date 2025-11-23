@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synapse Industrial Monitoring</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-900 text-white font-sans overflow-hidden">
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-[#0f172a] border-r border-gray-800 flex flex-col z-20">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-blue-500 tracking-wider">SYNAPSE</h1>
+                <p class="text-xs text-gray-500 mt-1">INDUSTRIAL MONITORING</p>
+            </div>
+
+            <nav class="flex-1 px-4 space-y-2 mt-4" id="sidebar-nav">
+                <a href="#" onclick="Navigation.switch('dashboard')" id="nav-dashboard"
+                    class="nav-item flex items-center gap-3 px-4 py-3 bg-blue-600/10 text-blue-400 rounded-lg border border-blue-600/20 transition-all">
+                    <i class="fa-solid fa-grid-2"></i>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+                <a href="#" onclick="Navigation.switch('machines')" id="nav-machines"
+                    class="nav-item flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800/50 hover:text-gray-200 rounded-lg transition-all">
+                    <i class="fa-solid fa-server"></i>
+                    <span>Machines</span>
+                </a>
+                <a href="#" onclick="Navigation.switch('performance')" id="nav-performance"
+                    class="nav-item flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800/50 hover:text-gray-200 rounded-lg transition-all">
+                    <i class="fa-solid fa-chart-simple"></i>
+                    <span>Performance</span>
+                </a>
+                <a href="#" onclick="Navigation.switch('consumables')" id="nav-consumables"
+                    class="nav-item flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800/50 hover:text-gray-200 rounded-lg transition-all">
+                    <i class="fa-solid fa-oil-can"></i>
+                    <span>Consumables</span>
+                </a>
+                <a href="#" onclick="Navigation.switch('spares')" id="nav-spares"
+                    class="nav-item flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800/50 hover:text-gray-200 rounded-lg transition-all">
+                    <i class="fa-solid fa-gears"></i>
+                    <span>Spare Parts</span>
+                </a>
+                <a href="#" onclick="Navigation.switch('predictions')" id="nav-predictions"
+                    class="nav-item flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800/50 hover:text-gray-200 rounded-lg transition-all">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Predicted Failures</span>
+                </a>
+                <a href="#" onclick="Navigation.switch('schedule')" id="nav-schedule"
+                    class="nav-item flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800/50 hover:text-gray-200 rounded-lg transition-all">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>Schedule</span>
+                </a>
+                <a href="#" onclick="Navigation.switch('repairs')" id="nav-repairs"
+                    class="nav-item flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800/50 hover:text-gray-200 rounded-lg transition-all">
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                    <span>Repairs</span>
+                </a>
+                <a href="#" onclick="Navigation.switch('alerts')" id="nav-alerts"
+                    class="nav-item flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800/50 hover:text-gray-200 rounded-lg transition-all">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Alerts</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-gray-800">
+                <div class="flex items-center gap-2 text-xs text-gray-500">
+                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                    <span id="system-status">System Online</span>
+                    <span class="ml-auto px-2 py-0.5 bg-gray-800 rounded text-gray-400">LIVE</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-hidden bg-[#0b1120] relative">
+            <!-- Header -->
+            <header
+                class="h-20 border-b border-gray-800 flex items-center justify-between px-8 bg-[#0f172a]/50 backdrop-blur-sm z-10">
+                <div>
+                    <h2 class="text-2xl font-bold text-white" id="page-title">Production Overview</h2>
+                    <p class="text-sm text-gray-400" id="page-subtitle">Real-time monitoring of critical assets</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div
+                        class="px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 text-sm text-gray-300 font-mono">
+                        Last Update: <span id="last-update" class="text-white">--:--:--</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Views Container -->
+            <div class="flex-1 overflow-y-auto p-8 relative">
+
+                <!-- VIEW: DASHBOARD -->
+                <div id="view-dashboard" class="view-section space-y-8">
+                    <!-- KPI Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Active Machines -->
+                        <div
+                            class="bg-[#1e293b] p-6 rounded-xl border border-gray-700/50 shadow-lg relative overflow-hidden group hover:border-blue-500/30 transition-all">
+                            <div
+                                class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <i class="fa-solid fa-server text-6xl text-blue-500"></i>
+                            </div>
+                            <div class="text-gray-400 text-sm font-medium mb-2">Active Machines</div>
+                            <div class="text-4xl font-bold text-white mb-1" id="kpi-active">0</div>
+                            <div class="text-xs text-gray-500">
+                                Running: <span class="text-green-400" id="kpi-running">0</span> |
+                                Idle: <span class="text-yellow-400" id="kpi-idle">0</span> |
+                                Fault: <span class="text-red-400" id="kpi-fault">0</span>
+                            </div>
+                            <div
+                                class="absolute bottom-0 left-0 h-1 bg-blue-500 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left">
+                            </div>
+                        </div>
+
+                        <!-- Efficiency -->
+                        <div
+                            class="bg-[#1e293b] p-6 rounded-xl border border-gray-700/50 shadow-lg relative overflow-hidden group hover:border-green-500/30 transition-all">
+                            <div
+                                class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <i class="fa-solid fa-chart-pie text-6xl text-green-500"></i>
+                            </div>
+                            <div class="text-gray-400 text-sm font-medium mb-2">Avg Efficiency</div>
+                            <div class="text-4xl font-bold text-green-400 mb-1" id="kpi-efficiency">0.0%</div>
+                            <div class="text-xs text-gray-500">Target: 85%</div>
+                            <div
+                                class="absolute bottom-0 left-0 h-1 bg-green-500 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left">
+                            </div>
+                        </div>
+
+                        <!-- Critical Alerts -->
+                        <div
+                            class="bg-[#1e293b] p-6 rounded-xl border border-gray-700/50 shadow-lg relative overflow-hidden group hover:border-red-500/30 transition-all">
+                            <div
+                                class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <i class="fa-solid fa-triangle-exclamation text-6xl text-red-500"></i>
+                            </div>
+                            <div class="text-gray-400 text-sm font-medium mb-2">Critical Alerts</div>
+                            <div class="text-4xl font-bold text-red-500 mb-1" id="kpi-alerts">0</div>
+                            <div class="text-xs text-gray-500">Requires Attention</div>
+                            <div
+                                class="absolute bottom-0 left-0 h-1 bg-red-500 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left">
+                            </div>
+                        </div>
+
+                        <!-- Predicted Failures -->
+                        <div
+                            class="bg-[#1e293b] p-6 rounded-xl border border-gray-700/50 shadow-lg relative overflow-hidden group hover:border-yellow-500/30 transition-all">
+                            <div
+                                class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <i class="fa-solid fa-clock-rotate-left text-6xl text-yellow-500"></i>
+                            </div>
+                            <div class="text-gray-400 text-sm font-medium mb-2">Predicted Failures</div>
+                            <div class="text-4xl font-bold text-yellow-400 mb-1" id="kpi-failures">0</div>
+                            <div class="text-xs text-gray-500">Next 24 Hours</div>
+                            <div
+                                class="absolute bottom-0 left-0 h-1 bg-yellow-500 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-[#1e293b] p-6 rounded-xl border border-gray-700/50 shadow-lg">
+                            <h3 class="text-lg font-semibold text-white mb-4">Temperature Trends</h3>
+                            <div class="h-64">
+                                <canvas id="tempChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-[#1e293b] p-6 rounded-xl border border-gray-700/50 shadow-lg">
+                            <h3 class="text-lg font-semibold text-white mb-4">Vibration Trends</h3>
+                            <div class="h-64">
+                                <canvas id="vibChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: MACHINES -->
+                <div id="view-machines" class="view-section hidden space-y-6">
+                    <div class="bg-[#1e293b] rounded-xl border border-gray-700 overflow-hidden">
+                        <table class="w-full text-left text-sm text-gray-400">
+                            <thead class="bg-[#0f172a] text-gray-200 font-medium border-b border-gray-700">
+                                <tr>
+                                    <th class="p-4">Machine ID</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4">Temperature</th>
+                                    <th class="p-4">Vibration</th>
+                                    <th class="p-4">RPM</th>
+                                    <th class="p-4">Efficiency</th>
+                                    <th class="p-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="machines-table-body" class="divide-y divide-gray-800">
+                                <!-- Rows injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW: PERFORMANCE -->
+                <div id="view-performance" class="view-section hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-[#1e293b] p-6 rounded-xl border border-gray-700/50 shadow-lg">
+                            <h3 class="text-lg font-semibold text-white mb-4">Load Distribution</h3>
+                            <div class="h-64">
+                                <canvas id="perf-load-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-[#1e293b] p-6 rounded-xl border border-gray-700/50 shadow-lg">
+                            <h3 class="text-lg font-semibold text-white mb-4">Efficiency Analysis</h3>
+                            <div class="h-64">
+                                <canvas id="perf-eff-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-[#1e293b] rounded-xl border border-gray-700 overflow-hidden">
+                        <div class="p-6 border-b border-gray-700">
+                            <h3 class="text-lg font-semibold text-white">Top Performers</h3>
+                        </div>
+                        <table class="w-full text-left text-sm text-gray-400">
+                            <thead class="bg-[#0f172a] text-gray-200 font-medium border-b border-gray-700">
+                                <tr>
+                                    <th class="p-4">Machine ID</th>
+                                    <th class="p-4">Efficiency</th>
+                                    <th class="p-4">Uptime</th>
+                                    <th class="p-4">Output Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody id="perf-table-body" class="divide-y divide-gray-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW: CONSUMABLES -->
+                <div id="view-consumables" class="view-section hidden space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="consumables-grid">
+                        <!-- Consumable Cards injected here -->
+                    </div>
+                </div>
+
+                <!-- VIEW: SPARES -->
+                <div id="view-spares" class="view-section hidden space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="spares-grid">
+                        <!-- Spares Cards injected here -->
+                    </div>
+                </div>
+
+                <!-- VIEW: PREDICTIONS -->
+                <div id="view-predictions" class="view-section hidden space-y-6">
+                    <div class="bg-[#1e293b] rounded-xl border border-gray-700 overflow-hidden">
+                        <div class="p-6 border-b border-gray-700">
+                            <h3 class="text-lg font-semibold text-white">Failure Prediction Analysis</h3>
+                            <p class="text-sm text-gray-400">AI-driven insights based on sensor anomalies and wear
+                                patterns</p>
+                        </div>
+                        <table class="w-full text-left text-sm text-gray-400">
+                            <thead class="bg-[#0f172a] text-gray-200 font-medium border-b border-gray-700">
+                                <tr>
+                                    <th class="p-4">Machine ID</th>
+                                    <th class="p-4">Risk Level</th>
+                                    <th class="p-4">Primary Factor</th>
+                                    <th class="p-4">Est. Failure</th>
+                                    <th class="p-4">Recommendation</th>
+                                </tr>
+                            </thead>
+                            <tbody id="predictions-table-body" class="divide-y divide-gray-800">
+                                <!-- Rows injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW: SCHEDULE -->
+                <div id="view-schedule" class="view-section hidden space-y-6">
+                    <div class="bg-[#1e293b] rounded-xl border border-gray-700 overflow-hidden">
+                        <div class="p-6 border-b border-gray-700 flex justify-between items-center">
+                            <div>
+                                <h3 class="text-lg font-semibold text-white">Maintenance Schedule</h3>
+                                <p class="text-sm text-gray-400">Upcoming planned downtime and inspections</p>
+                            </div>
+                            <button onclick="Dashboard.openScheduleModal()"
+                                class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm transition-colors">
+                                <i class="fa-solid fa-plus mr-2"></i>Schedule New
+                            </button>
+                        </div>
+                        <div id="schedule-list" class="divide-y divide-gray-800">
+                            <!-- Schedule items injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: REPAIRS -->
+                <div id="view-repairs" class="view-section hidden space-y-6">
+                    <div class="bg-[#1e293b] rounded-xl border border-gray-700 overflow-hidden">
+                        <div class="p-6 border-b border-gray-700">
+                            <h3 class="text-lg font-semibold text-white">Maintenance & Repair Log</h3>
+                            <p class="text-sm text-gray-400">Recent automated maintenance actions and replacements</p>
+                        </div>
+                        <div id="repairs-list" class="divide-y divide-gray-800">
+                            <!-- Repair items injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: ALERTS -->
+                <div id="view-alerts" class="view-section hidden space-y-6">
+                    <div class="bg-[#1e293b] rounded-xl border border-gray-700 p-6">
+                        <h3 class="text-lg font-semibold text-white mb-4">Active System Alerts</h3>
+                        <div id="alerts-list" class="space-y-4">
+                            <!-- Alerts injected here -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Machine Detail Modal -->
+    <div id="machine-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="MachineDetail.close()"></div>
+        <div
+            class="absolute inset-10 bg-[#1e293b] border border-gray-700 rounded-xl shadow-2xl flex flex-col overflow-hidden animate-fadeIn">
+            <!-- Modal Header -->
+            <div class="h-16 border-b border-gray-700 flex items-center justify-between px-6 bg-[#0f172a]">
+                <div>
+                    <h2 class="text-xl font-bold text-white" id="modal-title">Machine Details</h2>
+                    <p class="text-xs text-gray-400 font-mono" id="modal-id">ID: --</p>
+                </div>
+                <button onclick="MachineDetail.close()" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Charts Column -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-[#0b1120] rounded-lg p-4 border border-gray-800 h-64">
+                            <h3 class="text-sm font-medium text-gray-300 mb-2">Real-time Metrics</h3>
+                            <div class="h-full pb-6">
+                                <canvas id="detail-chart-main"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-[#0b1120] rounded-lg p-4 border border-gray-800 h-64">
+                            <h3 class="text-sm font-medium text-gray-300 mb-2">Power Analysis</h3>
+                            <div class="h-full pb-6">
+                                <canvas id="detail-chart-secondary"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Column -->
+                    <div class="space-y-6">
+                        <!-- Status Card -->
+                        <div class="bg-[#0b1120] rounded-lg p-4 border border-gray-800">
+                            <h3 class="text-sm font-medium text-gray-400 mb-3">Current Status</h3>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-2xl font-bold text-white" id="modal-status">--</span>
+                                <div class="h-3 w-3 rounded-full bg-gray-500" id="modal-status-dot"></div>
+                            </div>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between"><span class="text-gray-500">Efficiency</span> <span
+                                        class="text-white" id="modal-efficiency">--%</span></div>
+                                <div class="flex justify-between"><span class="text-gray-500">Uptime</span> <span
+                                        class="text-white" id="modal-uptime">-- h</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Consumables -->
+                        <div class="bg-[#0b1120] rounded-lg p-4 border border-gray-800">
+                            <h3 class="text-sm font-medium text-gray-400 mb-3">Consumables</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1"><span class="text-gray-500">Oil
+                                            Level</span> <span class="text-white" id="modal-oil">--%</span></div>
+                                    <div class="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                                        <div id="bar-oil" class="h-full bg-blue-500 w-0 transition-all duration-500">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1"><span
+                                            class="text-gray-500">Coolant</span> <span class="text-white"
+                                            id="modal-coolant">--%</span></div>
+                                    <div class="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                                        <div id="bar-coolant"
+                                            class="h-full bg-cyan-500 w-0 transition-all duration-500"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1"><span class="text-gray-500">Filter
+                                            Health</span> <span class="text-white" id="modal-filter">--%</span></div>
+                                    <div class="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                                        <div id="bar-filter"
+                                            class="h-full bg-purple-500 w-0 transition-all duration-500"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Spares -->
+                        <div class="bg-[#0b1120] rounded-lg p-4 border border-gray-800">
+                            <h3 class="text-sm font-medium text-gray-400 mb-3">Component Health</h3>
+                            <div class="flex items-center justify-center py-4">
+                                <div class="relative h-24 w-24">
+                                    <svg class="h-full w-full transform -rotate-90">
+                                        <circle cx="48" cy="48" r="40" stroke="currentColor" stroke-width="8"
+                                            fill="transparent" class="text-gray-800" />
+                                        <circle id="ring-bearing" cx="48" cy="48" r="40" stroke="currentColor"
+                                            stroke-width="8" fill="transparent" stroke-dasharray="251.2"
+                                            stroke-dashoffset="0" class="text-green-500 transition-all duration-1000" />
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center flex-col">
+                                        <span class="text-xl font-bold text-white" id="modal-bearing">--%</span>
+                                        <span class="text-[10px] text-gray-500 uppercase">Bearing</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div id="schedule-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="Dashboard.closeScheduleModal()"></div>
+        <div
+            class="absolute inset-x-0 top-20 mx-auto max-w-md bg-[#1e293b] border border-gray-700 rounded-xl shadow-2xl p-6 animate-fadeIn">
+            <h3 class="text-xl font-bold text-white mb-4">Schedule Maintenance</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Machine ID</label>
+                    <input type="text" id="sched-machine"
+                        class="w-full bg-[#0b1120] border border-gray-700 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                        placeholder="e.g. CNC Lathe A12">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Task Description</label>
+                    <input type="text" id="sched-task"
+                        class="w-full bg-[#0b1120] border border-gray-700 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                        placeholder="e.g. Oil Change">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Technician</label>
+                    <input type="text" id="sched-tech"
+                        class="w-full bg-[#0b1120] border border-gray-700 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                        placeholder="e.g. J. Doe">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Date</label>
+                    <input type="text" id="sched-date"
+                        class="w-full bg-[#0b1120] border border-gray-700 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                        placeholder="e.g. Tomorrow, 10:00 AM">
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button onclick="Dashboard.closeScheduleModal()"
+                        class="px-4 py-2 text-gray-400 hover:text-white">Cancel</button>
+                    <button onclick="Dashboard.addScheduleTask()"
+                        class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg">Add Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="dashboard_ws.js"></script>
+    <script src="alerts.js"></script>
+    <script src="analytics.js"></script>
+    <script src="machine_detail.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+
+</html>
